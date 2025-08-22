@@ -1,13 +1,15 @@
-.PHONY: help db-up db-down server test clean
+.PHONY: help db-up db-down rest-server grpc-server test-rest test-grpc clean
 
 # 預設目標
 help:
 	@echo "Available commands:"
-	@echo "  make db-up     - Start MySQL database"
-	@echo "  make db-down   - Stop MySQL database"
-	@echo "  make server    - Start the REST server"
-	@echo "  make test      - Test API endpoints"
-	@echo "  make clean     - Stop database and clean up"
+	@echo "  make db-up        - Start MySQL database"
+	@echo "  make db-down      - Stop MySQL database"
+	@echo "  make rest-server  - Start the REST server"
+	@echo "  make grpc-server  - Start the gRPC server"
+	@echo "  make test-rest    - Test REST API endpoints"
+	@echo "  make test-grpc    - Test gRPC endpoints"
+	@echo "  make clean        - Stop database and clean up"
 
 # 啟動資料庫
 db-up:
@@ -23,16 +25,27 @@ db-down:
 	docker-compose down
 	@echo "✅ Database stopped!"
 
-# 啟動 server
-server:
+# 啟動 REST server
+rest-server:
 	@echo "Starting REST server..."
-	go run cmd/server/main.go
+	go run cmd/rest-server/main.go
 
-# 測試 API
-test:
-	@echo "Testing API endpoints..."
+# 啟動 gRPC server
+grpc-server:
+	@echo "Starting gRPC server..."
+	go run cmd/grpc-server/main.go
+
+# 測試 REST API
+test-rest:
+	@echo "Testing REST API endpoints..."
 	@chmod +x scripts/test-api.sh
 	@./scripts/test-api.sh
+
+# 測試 gRPC API
+test-grpc:
+	@echo "Testing gRPC endpoints..."
+	@chmod +x scripts/test-grpc.sh
+	@./scripts/test-grpc.sh
 
 # 清理
 clean: db-down

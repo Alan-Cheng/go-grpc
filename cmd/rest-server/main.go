@@ -43,6 +43,6 @@ func main() {
 	}
 
 	// 啟動 server
-	fmt.Printf("Server starting on port %s...\n", port)
+	fmt.Printf("REST Server starting on port %s...\n", port)
 	log.Fatal(http.ListenAndServe(":"+port, router))
 }
