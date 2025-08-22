@@ -17,11 +17,11 @@ const (
 )
 
 type BooksHandler struct {
-	bookService service.BookService
+	bookService *service.BookService
 }
 
 func GetNewBookshandler(bookService service.BookService) *BooksHandler {
-	return &BooksHandler{bookService: bookService}
+	return &BooksHandler{bookService: &bookService}
 }
 
 func (bh *BooksHandler) GetBookList(w http.ResponseWriter, r *http.Request) {
@@ -51,7 +51,11 @@ func (bh *BooksHandler) GetOrRemoveBookHandler(w http.ResponseWriter, r *http.Re
 		}
 		respondWithJSON(w, http.StatusOK, Book(book))
 	case "DELETE":
-		bh.bookService.RemoveBook(isbn)
+		err := bh.bookService.RemoveBook(isbn)
+		if err != nil {
+			respondWithError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
 		respondWithJSON(w, http.StatusOK, map[string]string{"message": "Book removed successfully"})
 	default:
 		respondWithError(w, http.StatusMethodNotAllowed, "Method not allowed")
@@ -69,10 +73,18 @@ func (bh *BooksHandler) UpsertBookHandler(w http.ResponseWriter, r *http.Request
 
 	switch r.Method {
 	case "PUT":
-		bh.bookService.AddBook(DBBook(book))
+		err := bh.bookService.AddBook(DBBook(book))
+		if err != nil {
+			respondWithError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
 		respondWithJSON(w, http.StatusOK, map[string]string{"message": "Book added successfully"})
 	case "POST":
-		bh.bookService.UpdateBook(DBBook(book))
+		err := bh.bookService.UpdateBook(DBBook(book))
+		if err != nil {
+			respondWithError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
 		respondWithJSON(w, http.StatusOK, map[string]string{"message": "Book updated successfully"})
 	default:
 		respondWithError(w, http.StatusMethodNotAllowed, "Method not allowed")
@@ -80,7 +92,7 @@ func (bh *BooksHandler) UpsertBookHandler(w http.ResponseWriter, r *http.Request
 }
 
 func respondWithError(w http.ResponseWriter, code int, message string) {
-	respondWithJSON(w, code, map[string]string{SuccessResponseFieldKey: message})
+	respondWithJSON(w, code, map[string]string{ErrorReponseFieldKey: message})
 }
 
 func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
