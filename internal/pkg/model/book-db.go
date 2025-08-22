@@ -7,7 +7,7 @@ type Tabler interface {
 
 type DBBook struct {
 	Isbn      int    `json:"isbn"`
-	Name      string `josn:"name"`
+	Name      string `json:"name"`
 	Publisher string `json:"publisher"`
 }
 

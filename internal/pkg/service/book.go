@@ -16,33 +16,48 @@ func GetNewBookService(bookRepo *repo.BookRepository) *BookService {
 	return &BookService{booksRepo: bookRepo}
 }
 
-func (bs *BookService) AddBook(book *model.DBBook) {
-	bs.booksRepo.AddBook(book)
+func (bs *BookService) AddBook(book *model.DBBook) error {
+	err := bs.booksRepo.AddBook(book)
+	if err != nil {
+		return errors.Wrap(err, "failed to add book")
+	}
+	return nil
 }
 
 func (bs *BookService) GetBook(isbn int) (*model.DBBook, error) {
-	book := bs.booksRepo.GetBook(isbn)
-	if book != nil {
-		return book, nil
+	book, err := bs.booksRepo.GetBook(isbn)
+	if err != nil {
+		return nil, errors.Wrapf(err, "failed to get book with isbn %d", isbn)
 	}
-	return nil, errors.New(fmt.Sprintf("book with isbn %d was not found", isbn))
+	if book == nil {
+		return nil, errors.New(fmt.Sprintf("book with isbn %d was not found", isbn))
+	}
+	return book, nil
 }
 
 func (bs *BookService) GetAllBooks() ([]*model.DBBook, error) {
 	books, err := bs.booksRepo.GetAllBooks()
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "failed to get all books")
 	}
 	if len(books) == 0 {
-		return nil, errors.New("No books present")
+		return nil, errors.New("no books present")
 	}
 	return books, nil
 }
 
-func (bs *BookService) RemoveBook(isbn int) {
-	bs.booksRepo.RemoveBook(isbn)
+func (bs *BookService) RemoveBook(isbn int) error {
+	err := bs.booksRepo.RemoveBook(isbn)
+	if err != nil {
+		return errors.Wrapf(err, "failed to remove book with isbn %d", isbn)
+	}
+	return nil
 }
 
-func (bs *BookService) UpdateBook(book *model.DBBook) {
-	bs.booksRepo.UpdateBook(book)
+func (bs *BookService) UpdateBook(book *model.DBBook) error {
+	err := bs.booksRepo.UpdateBook(book)
+	if err != nil {
+		return errors.Wrapf(err, "failed to update book with isbn %d", book.Isbn)
+	}
+	return nil
 }
