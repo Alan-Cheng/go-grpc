@@ -1,4 +1,4 @@
-.PHONY: help db-up db-down rest-server grpc-server test-rest test-grpc clean
+.PHONY: help db-up db-down rest-server grpc-server test-rest test-grpc proto clean
 
 # 預設目標
 help:
@@ -9,6 +9,7 @@ help:
 	@echo "  make grpc-server  - Start the gRPC server"
 	@echo "  make test-rest    - Test REST API endpoints"
 	@echo "  make test-grpc    - Test gRPC endpoints"
+	@echo "  make proto        - Generate protobuf Go files"
 	@echo "  make clean        - Stop database and clean up"
 
 # 啟動資料庫
@@ -34,6 +35,12 @@ rest-server:
 grpc-server:
 	@echo "Starting gRPC server..."
 	go run cmd/grpc-server/main.go
+
+# 生成 protobuf Go 檔案
+proto:
+	@echo "Generating protobuf Go files..."
+	protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative internal/pkg/proto/book.proto
+	@echo "✅ Protobuf files generated!"
 
 # 測試 REST API
 test-rest:
