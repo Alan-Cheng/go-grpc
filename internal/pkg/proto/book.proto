@@ -1,0 +1,57 @@
+syntax = "proto3";
+
+package prot;
+
+option go_package = "./proto";
+
+message Empty {}
+
+message Book {
+    int32 isbn = 1;
+    string name = 2;
+    string publisher = 3;
+}
+
+message ListBookResponse {
+    repeated Book books = 1;
+}
+
+message GetBookRequest {
+    int32 isbn = 1;
+}
+
+message GetBookResponse {
+    Book book = 1;
+}
+
+message AddBookRequest {
+    Book book = 1;
+}
+
+message AddBookResponse {
+    string message = 1;
+}
+
+message UpdateBookRequest {
+    Book book = 1;
+}
+
+message UpdateBookResponse {
+    string message = 1;
+}
+
+message RemoveBookRequest {
+    int32 isbn = 1;
+}
+
+message RemoveBookResponse {
+    string message = 1;
+}
+
+service BookService {
+    rpc AddBook(AddBookRequest) returns (AddBookResponse);
+    rpc GetBook(GetBookRequest) returns (GetBookResponse);
+    rpc GetAllBooks(Empty) returns (ListBookResponse);
+    rpc UpdateBook(UpdateBookRequest) returns (UpdateBookResponse);
+    rpc RemoveBook(RemoveBookRequest) returns (RemoveBookResponse);
+}
