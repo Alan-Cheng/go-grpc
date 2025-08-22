@@ -2,9 +2,6 @@
 
 echo "Testing gRPC endpoints..."
 
-# 需要先安裝 grpcurl
-# brew install grpcurl
-
 GRPC_URL="localhost:9090"
 
 echo "1. Getting all books..."
